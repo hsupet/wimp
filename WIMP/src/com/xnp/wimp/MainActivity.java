@@ -25,6 +25,7 @@ public class MainActivity extends ActionBarActivity {
     private static final String TAG = "MainActivity";
     private static final boolean DBG = BuildConfig.DEBUG;
 
+    private static final int MSG_REFRESH_DELAY = 8964;
     private BMapManager mBMapMan = null;
     private MapView mMapView = null;
 
@@ -52,7 +53,8 @@ public class MainActivity extends ActionBarActivity {
         // mCheckTS = System.currentTimeMillis();
 
         Message message = Message.obtain();
-        message.what = mCurPoint++;
+        message.what = MSG_REFRESH_DELAY;
+        message.obj = mCurPoint++;
 
         handler.sendMessageDelayed(message, 3500l);
     }
@@ -105,10 +107,10 @@ public class MainActivity extends ActionBarActivity {
         mMapController.setZoom(15);// 设置地图zoom级别
 
         mOverlayTest = new ItemizedOverlay(MainActivity.this.getResources()
-                .getDrawable(R.drawable.ic_launcher), mMapView);
+                .getDrawable(R.drawable.logistics_package_normal), mMapView);
         mOverlayTest.removeAll();
         mMapView.getOverlays().add(mOverlayTest);
-        autoChangeViewPagerPosition();
+        // autoChangeViewPagerPosition();
     }
 
     @Override
@@ -143,6 +145,7 @@ public class MainActivity extends ActionBarActivity {
 
     @Override
     protected void onPause() {
+        handler.removeMessages(MSG_REFRESH_DELAY);
         mMapView.onPause();
         if (mBMapMan != null) {
             mBMapMan.stop();
@@ -152,6 +155,7 @@ public class MainActivity extends ActionBarActivity {
 
     @Override
     protected void onResume() {
+        autoChangeViewPagerPosition();
         mMapView.onResume();
         if (mBMapMan != null) {
             mBMapMan.start();
